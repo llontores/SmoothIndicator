@@ -36,7 +36,7 @@ public class HealthBar : MonoBehaviour
         _slider.value = target / _health.MaxValue;
     }
 
-    private void ChangeHPWork(float target, float previousValue)
+    private void ChangeHPWork(float target)
     {
         if (_changeHPJob != null)
             StopCoroutine(_changeHPJob);
