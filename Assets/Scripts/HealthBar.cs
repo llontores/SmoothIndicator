@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class HealthBar : MonoBehaviour
 {
     [SerializeField] private Health _health;
-    [SerializeField] private float _duration;
+    [SerializeField] private float _duration = 0.5f;
     [SerializeField] private Slider _slider;
 
     private Coroutine _changeHPJob;
@@ -20,29 +20,27 @@ public class HealthBar : MonoBehaviour
         _health.AmountChanged -= ChangeHPWork;
     }
 
-    private IEnumerator ChangeHP(float target, float previousValue)
+    private IEnumerator ChangeHP(float target)
     {
-        float elapsedTime = 0;
-        float startValue = previousValue;
-        float current = startValue;
+        float startValue = _slider.value * _health.MaxValue;
+        float elapsedTime = 0f;
 
-        while (true)
+        while (elapsedTime < _duration)
         {
             elapsedTime += Time.deltaTime;
-            current = Mathf.Lerp(startValue, target, elapsedTime / _duration);
-            _slider.value = current / (_health.MaxValue - 1);
-
+            float current = Mathf.Lerp(startValue, target, elapsedTime / _duration);
+            _slider.value = current / _health.MaxValue;
             yield return null;
         }
+
+        _slider.value = target / _health.MaxValue;
     }
 
     private void ChangeHPWork(float target, float previousValue)
     {
         if (_changeHPJob != null)
-        {
             StopCoroutine(_changeHPJob);
-        }
 
-        _changeHPJob = StartCoroutine(ChangeHP(target, previousValue));
+        _changeHPJob = StartCoroutine(ChangeHP(target));
     }
 }
